@@ -94,7 +94,13 @@ for message in responses:
         # 自动执行并更新上下文
         fn_res: str = json.dumps(FunctionTool.get_function_by_name(fn_name)(**fn_args))
         messages.append({
-            "role": "function",
+            "role": "function", # 将role更新为function，表示是function calling
             "name": fn_name,
             "content": fn_res,
         })
+
+for responses in llm.chat(messages=messages, functions=functions):
+    pass
+messages.extend(responses)
+
+print(messages)
