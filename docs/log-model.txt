@@ -1,0 +1,19 @@
+- log
+  - log
+    - myservice1
+      - log
+        - root.log
+        - root20260303949.zip
+        - common.log
+        - collect
+          - collect.log
+          - collect-20260303323.zip
+        - ingestion
+          - ingestrion.log
+          - ingestion-20260303323.zip
+    - myservice2
+      - log
+        - ...
+    - myservice3
+      - log
+        - ...
