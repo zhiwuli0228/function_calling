@@ -15,16 +15,64 @@ class LLMConfig:
     timeout: int = 60
 
 
+def load_config_file(path: str | None) -> dict[str, Any]:
+    if not path:
+        return {}
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    if not isinstance(data, dict):
+        raise ValueError("Config file root must be a JSON object.")
+    return data
+
+
+def resolve_config(
+    file_config: dict[str, Any] | None,
+    base_url: str | None = None,
+    api_key: str | None = None,
+    model: str | None = None,
+    timeout: int | None = None,
+) -> LLMConfig:
+    cfg = file_config or {}
+    llm_cfg = cfg.get("llm")
+    if not isinstance(llm_cfg, dict):
+        llm_cfg = {}
+
+    resolved_base = (
+        base_url
+        or os.getenv("OPENAI_BASE_URL")
+        or llm_cfg.get("base_url")
+        or "https://api.openai.com"
+    )
+    resolved_key = api_key or os.getenv("OPENAI_API_KEY") or llm_cfg.get("api_key") or ""
+    resolved_model = model or os.getenv("OPENAI_MODEL") or llm_cfg.get("model") or ""
+
+    raw_timeout = timeout if timeout is not None else llm_cfg.get("timeout", 60)
+    try:
+        resolved_timeout = max(1, int(raw_timeout))
+    except (TypeError, ValueError):
+        resolved_timeout = 60
+
+    return LLMConfig(
+        base_url=str(resolved_base).strip().rstrip("/"),
+        api_key=str(resolved_key).strip(),
+        model=str(resolved_model).strip(),
+        timeout=resolved_timeout,
+    )
+
+
 def config_from_env(
     base_url: str | None = None,
     api_key: str | None = None,
     model: str | None = None,
     timeout: int = 60,
 ) -> LLMConfig:
-    resolved_base = (base_url or os.getenv("OPENAI_BASE_URL") or "https://api.openai.com").strip().rstrip("/")
-    resolved_key = (api_key or os.getenv("OPENAI_API_KEY") or "").strip()
-    resolved_model = (model or os.getenv("OPENAI_MODEL") or "").strip()
-    return LLMConfig(base_url=resolved_base, api_key=resolved_key, model=resolved_model, timeout=timeout)
+    return resolve_config(
+        file_config=None,
+        base_url=base_url,
+        api_key=api_key,
+        model=model,
+        timeout=timeout,
+    )
 
 
 def build_log_analysis_messages(question: str, log_lines: list[str]) -> list[dict[str, str]]:

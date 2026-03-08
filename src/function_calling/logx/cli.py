@@ -6,7 +6,7 @@ from pathlib import Path
 
 from .grepper import GrepOptions, ZGrepOptions, iter_grep, iter_zgrep_lines
 from .gui import run_gui
-from .llm import build_log_analysis_messages, chat_completion, config_from_env
+from .llm import build_log_analysis_messages, chat_completion, load_config_file, resolve_config
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -61,6 +61,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_analyze = sub.add_parser("analyze", help="Search logs and send snippets to an OpenAI-compatible model.")
     p_analyze.add_argument("question", help="Analysis question for the model.")
     p_analyze.add_argument("path", nargs="?", default=".", help="Root directory or file.")
+    p_analyze.add_argument("--config", default=None, help="JSON config path, e.g. ./logx.config.json")
     p_analyze.add_argument("--pattern", default="ERROR|Exception|timeout|failed", help="Primary search pattern.")
     p_analyze.add_argument("--name", default="*", help="File name glob, e.g. collect*")
     p_analyze.add_argument("-F", action="store_true", dest="fixed", help="Fixed string search.")
@@ -77,7 +78,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_analyze.add_argument("--llm-base-url", default=None, help="OpenAI-compatible base URL.")
     p_analyze.add_argument("--llm-api-key", default=None, help="API key (or use OPENAI_API_KEY).")
     p_analyze.add_argument("--llm-model", default=None, help="Model name (or use OPENAI_MODEL).")
-    p_analyze.add_argument("--llm-timeout", type=int, default=60, help="LLM request timeout (seconds).")
+    p_analyze.add_argument("--llm-timeout", type=int, default=None, help="LLM request timeout (seconds).")
 
     sub.add_parser("gui", help="Launch desktop GUI.")
     return parser
@@ -186,7 +187,14 @@ def main(argv: list[str] | None = None) -> int:
             print("No matched logs for analysis. Try adjusting --pattern / --name.")
             return 1
 
-        llm_cfg = config_from_env(
+        try:
+            file_cfg = load_config_file(args.config)
+        except Exception as exc:
+            print(f"Invalid config file: {exc}")
+            return 1
+
+        llm_cfg = resolve_config(
+            file_config=file_cfg,
             base_url=args.llm_base_url,
             api_key=args.llm_api_key,
             model=args.llm_model,

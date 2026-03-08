@@ -4,18 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="134c2f1b-7eef-4e5e-af7b-c792675e4dcc" name="Changes" comment="function calling handle">
+    <list default="true" id="134c2f1b-7eef-4e5e-af7b-c792675e4dcc" name="Changes" comment="支持接入大模型分析日志结构">
       <change afterPath="$PROJECT_DIR$/data/workspace/log/img.png" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/data/workspace/log/img_1.png" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/data/workspace/log/img_2.png" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/data/workspace/log/img_3.png" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/docs/log.zip" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/function_calling/logx/llm.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/test_analyze.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/Readme.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/function_calling/logx/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/function_calling/logx/cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_zgrep.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_zgrep.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/function_calling/logx/llm.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/function_calling/logx/llm.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_analyze.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_analyze.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -235,7 +233,7 @@
       <workItem from="1772038797864" duration="656000" />
       <workItem from="1772039498048" duration="5986000" />
       <workItem from="1772549492819" duration="9376000" />
-      <workItem from="1772959992070" duration="984000" />
+      <workItem from="1772959992070" duration="2255000" />
     </task>
     <task id="LOCAL-00001" summary="init project">
       <option name="closed" value="true" />
@@ -269,7 +267,15 @@
       <option name="project" value="LOCAL" />
       <updated>1772557233758</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="支持接入大模型分析日志结构">
+      <option name="closed" value="true" />
+      <created>1772961397172</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1772961397172</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -278,7 +284,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="init project" />
     <MESSAGE value="function calling handle" />
-    <option name="LAST_COMMIT_MESSAGE" value="function calling handle" />
+    <MESSAGE value="支持接入大模型分析日志结构" />
+    <option name="LAST_COMMIT_MESSAGE" value="支持接入大模型分析日志结构" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

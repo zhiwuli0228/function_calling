@@ -116,3 +116,21 @@ logx analyze "请分析根因并给出下一步动作" ./data/workspace --name "collect*" --p
 ```bash
 logx analyze "请分析根因并给出下一步动作" ./data/workspace --name "collect*" --pattern "ERROR|timeout" --llm-base-url "https://api.openai.com" --llm-api-key "sk-xxx" --llm-model "gpt-4o-mini" --max-lines 200
 ```
+
+
+配置文件方式（推荐本地部署）：
+
+```json
+{
+  "llm": {
+    "base_url": "http://127.0.0.1:11434",
+    "api_key": "local-key",
+    "model": "qwen2.5:14b",
+    "timeout": 120
+  }
+}
+```
+
+```bash
+logx analyze "请分析超时错误根因" ./data/workspace --config ./logx.config.json --name "collect*" --pattern "ERROR|timeout"
+```
