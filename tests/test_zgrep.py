@@ -1,4 +1,4 @@
-import sys
+﻿import sys
 from pathlib import Path
 import unittest
 from tempfile import TemporaryDirectory
@@ -21,6 +21,7 @@ class ZGrepTests(unittest.TestCase):
                 root=root,
                 pattern="timeout",
                 or_patterns=["ERROR"],
+                and_patterns=[],
                 name_glob="collect*",
                 regex=True,
                 fixed=False,
@@ -54,6 +55,7 @@ class ZGrepTests(unittest.TestCase):
                 root=root,
                 pattern="hit",
                 or_patterns=[],
+                and_patterns=[],
                 name_glob="*.log",
                 regex=False,
                 fixed=True,
@@ -85,6 +87,7 @@ class ZGrepTests(unittest.TestCase):
                 root=root,
                 pattern="HIT",
                 or_patterns=[],
+                and_patterns=[],
                 name_glob="*.log",
                 regex=False,
                 fixed=True,
@@ -119,6 +122,7 @@ class ZGrepTests(unittest.TestCase):
                 root=root,
                 pattern="hit",
                 or_patterns=[],
+                and_patterns=[],
                 name_glob="*.log",
                 regex=False,
                 fixed=True,
@@ -150,6 +154,7 @@ class ZGrepTests(unittest.TestCase):
                 root=root,
                 pattern="hit",
                 or_patterns=[],
+                and_patterns=[],
                 name_glob="hit.log",
                 regex=False,
                 fixed=True,
@@ -184,6 +189,7 @@ class ZGrepTests(unittest.TestCase):
                 root=root,
                 pattern="hit",
                 or_patterns=[],
+                and_patterns=[],
                 name_glob="*.log",
                 regex=False,
                 fixed=True,
@@ -213,6 +219,7 @@ class ZGrepTests(unittest.TestCase):
                 root=root,
                 pattern="hit",
                 or_patterns=[],
+                and_patterns=[],
                 name_glob="*.log",
                 regex=False,
                 fixed=True,
@@ -234,6 +241,7 @@ class ZGrepTests(unittest.TestCase):
                 root=root,
                 pattern="hit",
                 or_patterns=[],
+                and_patterns=[],
                 name_glob="*.log",
                 regex=False,
                 fixed=True,
@@ -261,3 +269,5 @@ class ZGrepTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+

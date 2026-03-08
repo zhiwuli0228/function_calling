@@ -6,6 +6,7 @@ from pathlib import Path
 
 from .grepper import GrepOptions, ZGrepOptions, iter_grep, iter_zgrep_lines
 from .gui import run_gui
+from .llm import build_log_analysis_messages, chat_completion, config_from_env
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -56,6 +57,27 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Skip searching inside .zip/.gz/.tar* archives.",
     )
+
+    p_analyze = sub.add_parser("analyze", help="Search logs and send snippets to an OpenAI-compatible model.")
+    p_analyze.add_argument("question", help="Analysis question for the model.")
+    p_analyze.add_argument("path", nargs="?", default=".", help="Root directory or file.")
+    p_analyze.add_argument("--pattern", default="ERROR|Exception|timeout|failed", help="Primary search pattern.")
+    p_analyze.add_argument("--name", default="*", help="File name glob, e.g. collect*")
+    p_analyze.add_argument("-F", action="store_true", dest="fixed", help="Fixed string search.")
+    p_analyze.add_argument("-i", action="store_true", dest="ignore_case", help="Ignore case.")
+    p_analyze.add_argument("--or", action="append", dest="or_patterns", help="Additional pattern (OR match).")
+    p_analyze.add_argument("--and", action="append", dest="and_patterns", help="Additional pattern (AND match).")
+    p_analyze.add_argument("--max-lines", type=int, default=200, help="Max log lines sent to model.")
+    p_analyze.add_argument("--context", type=int, default=0, help="Context lines before/after each match.")
+    p_analyze.add_argument(
+        "--no-archives",
+        action="store_true",
+        help="Skip searching inside .zip/.gz/.tar* archives.",
+    )
+    p_analyze.add_argument("--llm-base-url", default=None, help="OpenAI-compatible base URL.")
+    p_analyze.add_argument("--llm-api-key", default=None, help="API key (or use OPENAI_API_KEY).")
+    p_analyze.add_argument("--llm-model", default=None, help="Model name (or use OPENAI_MODEL).")
+    p_analyze.add_argument("--llm-timeout", type=int, default=60, help="LLM request timeout (seconds).")
 
     sub.add_parser("gui", help="Launch desktop GUI.")
     return parser
@@ -126,6 +148,62 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "gui":
         run_gui()
+        return 0
+
+    if args.command == "analyze":
+        max_lines = max(1, int(args.max_lines))
+        context = max(0, int(args.context))
+        options = ZGrepOptions(
+            root=Path(args.path).expanduser().resolve(),
+            pattern=args.pattern,
+            or_patterns=args.or_patterns or [],
+            and_patterns=args.and_patterns or [],
+            name_glob=args.name,
+            regex=not args.fixed,
+            fixed=bool(args.fixed),
+            ignore_case=bool(args.ignore_case),
+            line_number=True,
+            context_before=context,
+            context_after=context,
+            max_count=max_lines,
+            files_with_matches=False,
+            files_without_match=False,
+            count_only=False,
+            suppress_filename=False,
+            force_filename=False,
+            include_archives=not args.no_archives,
+            color="never",
+        )
+        snippets: list[str] = []
+        for line in iter_zgrep_lines(options):
+            if line == "--":
+                continue
+            snippets.append(line)
+            if len(snippets) >= max_lines:
+                break
+
+        if not snippets:
+            print("No matched logs for analysis. Try adjusting --pattern / --name.")
+            return 1
+
+        llm_cfg = config_from_env(
+            base_url=args.llm_base_url,
+            api_key=args.llm_api_key,
+            model=args.llm_model,
+            timeout=args.llm_timeout,
+        )
+        messages = build_log_analysis_messages(args.question, snippets)
+        try:
+            result = chat_completion(llm_cfg, messages)
+        except Exception as exc:
+            print(f"Analyze failed: {exc}")
+            return 1
+
+        print("=== logx analyze ===")
+        print(f"Model: {llm_cfg.model}")
+        print(f"Matched lines sent: {len(snippets)}")
+        print("")
+        print(result)
         return 0
 
     parser.print_help()
